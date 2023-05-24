@@ -6,6 +6,7 @@ import (
 	"github.com/flachnetz/startup/v2/lib/ql"
 	"github.com/jmoiron/sqlx"
 	. "github.com/onsi/ginkgo/v2"
+	"github.com/onsi/ginkgo/v2/types"
 	. "github.com/onsi/gomega"
 	"pee"
 	"testing"
@@ -15,7 +16,7 @@ import (
 
 func TestRunSuite(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "SqliteStore specs")
+	RunSpecs(t, "SqliteStore specs", types.ReporterConfig{Verbose: true})
 }
 
 var _ = Describe("Sqlite store", func() {

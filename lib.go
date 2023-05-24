@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-type Handler[TxContext context.Context, S State] func(ctx TxContext, state S) (*StateTransition[TxContext], error)
+type Handler[TxContext context.Context, S State] func(ctx context.Context, state S) (*StateTransition[TxContext], error)
 
 type Transform[S State, T any] func(ctx context.Context, state S) (T, error)
 
@@ -83,7 +83,7 @@ func New[R any, TxContext context.Context](store Store[TxContext]) *Automata[TxC
 	}
 }
 
-func (a *Automata[TxContext, R]) Execute(ctx TxContext, runInTx RunInTx[TxContext, Instance], instance Instance) (R, error) {
+func (a *Automata[TxContext, R]) Execute(ctx context.Context, runInTx RunInTx[TxContext, Instance], instance Instance) (R, error) {
 	var nilT R
 
 	for {
@@ -117,7 +117,7 @@ func (a *Automata[TxContext, R]) Execute(ctx TxContext, runInTx RunInTx[TxContex
 	}
 }
 
-func (a *Automata[TxContext, R]) applyTransition(ctx TxContext, runInTx RunInTx[TxContext, Instance], instance Instance, transition *StateTransition[TxContext]) (Instance, error) {
+func (a *Automata[TxContext, R]) applyTransition(ctx context.Context, runInTx RunInTx[TxContext, Instance], instance Instance, transition *StateTransition[TxContext]) (Instance, error) {
 	return runInTx(ctx, func(ctx TxContext) (Instance, error) {
 		// apply transition to get the next state
 		nextState, err := transition.applyIn(ctx)
@@ -183,7 +183,7 @@ func (a *Automata[TxContext, R]) NewTransition(newState State) *StateTransition[
 // must be a struct of type State.
 // Every state can only be registered once, otherwise this method will panic.
 func AddState[S State, R any, TxContext context.Context](a *Automata[TxContext, R], handler Handler[TxContext, S]) {
-	addStateInternal[S](a, a.states, func(ctx TxContext, state State) (*StateTransition[TxContext], error) {
+	addStateInternal[S](a, a.states, func(ctx context.Context, state State) (*StateTransition[TxContext], error) {
 		return handler(ctx, state.(S))
 	})
 }
